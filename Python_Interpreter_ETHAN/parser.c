@@ -9,13 +9,16 @@ int check_print_func(List*);
 int is_string_correct(char*);
 char* return_str_without_two(char*);
 char* return_str_without_one(char*);
+Variable* is_variable(ListVar*, char*);
 
 
-void parseString(char* input) {
+int want_variable = 0;
+
+void parseString(ListVar* lstvar, char* input) {
+	want_variable = 0;
 	check_quit(input);//check if the user want to quit
-	is_first_print(input);
-	want_new_variable(input);
-	check_print_func(input);
+	want_new_variable(lstvar, input);
+	check_print_func(lstvar,input);
 	
 	
 	
@@ -27,52 +30,22 @@ void check_quit(char* input) {
 }
 
 
-int check_print_func(char *input) {
+int check_print_func(ListVar* lstvar, char *input) {
 	List *lst = new_list_parenthese(input);
+	Variable *maybe = is_variable(lstvar, lst->last->value);
 	if ((strcmp(lst->head->value, "print") == 0)||(strcmp(lst->head->value, "print ") == 0)) {
-#pragma region old Print
-		/*Node *current = lst->head->next;
-Node *lastword = lst->last;
-int l = lst->length - 1;
-int w = strlen(lastword->value) - 1;
-int is_first = 1;
-int i;
-if (current != NULL)
-{
-	if ((current->value[0] == '\'' && lastword->value[w] == '\'')
-		|| (current->value[0] == '\"' && lastword->value[w] == '\"')) {
-		while (current != NULL) {
-			if (is_first == 1) {
-				for (i = 1; i < strlen(current->value) - 1; i++)
-				{
-					printf("%c", current->value[i]);
-				}
-				is_first = 0;
-			}
-			else
-			{
-				for (i = 0; i < strlen(current->value) - 1; i++)
-				{
-					if (i == 0)
-						printf(" %c", current->value[i]);
-					else
-						printf("%c", current->value[i]);
-				}
-			}
-			current = current->next;
-		}
-	}
-}
-*/
-#pragma endregion
+
 		if (is_string_correct(lst->last->value) == 1) {
 			printf("%s", return_str_without_one(lst->last->value));
 		}
 		else if(is_string_correct(lst->last->value) == 2)
 			printf("%s", return_str_without_two(lst->last->value));
-		else if (is_variable(lst->last->value))
+		else if (maybe!=NULL)
 		{
-			//print variable value
+			if (strcmp(maybe->type,"integer")==0)
+				printf("%d", maybe->value_int);
+			else
+				printf("%s", maybe->value_string);
 		}
 		else
 			printf("SytaxError you need choukchick");
@@ -80,14 +53,20 @@ if (current != NULL)
 		
 	}
 	else
-		is_variable(input);
+	{
+		if (want_variable != 1)
+			printf("WHAT DO YOU WANT???");
+	}
 
 	return 1;
 }
 
-int is_variable(char *input) {
-		
-	return 0;
+Variable* is_variable(ListVar* lstvar, char *name) {
+	Variable *toReturn = get_var_by_name(lstvar, name);
+	if (toReturn != NULL)
+		return toReturn;
+	else
+		return NULL;
 }
 
 int is_string_correct(char *recv) {
@@ -98,7 +77,6 @@ int is_string_correct(char *recv) {
 		return 2;
 	return 0;
 }
-
 char* return_str_without_two(char *recv) {
 	char *to_return = strtok(recv, "\"");
 	return to_return;
@@ -110,50 +88,46 @@ char* return_str_without_one(char *recv) {
 
 }
 
-int want_new_variable(char *input) {
-	List *lst = new_list_equals(input); 
-	char name[1024]; char value[1024];
-	strcpy(name, lst->head->value);
-	strcpy(value, lst->last->value);
+int want_new_variable(ListVar* lstvar, char *input) {
+	List *lst = new_list_equals(input);
+	char *name= NULL; char *value= NULL;
+	name = lst->head->value;
+	value = lst->last->value;
 	
-	if (lst->length == 2) {
-		create_variable(name,value);
+  	if (lst->length == 2) {
+		want_variable = 1;
+		create_variable(lstvar, name, value);
 	}
+	
+	return 0;
 }
 
-int create_variable(char* name, char *value) {
-	char *type;
-	char test = '5';
+int create_variable(ListVar* lstvar, char* name, char *value) {
+	char *type=NULL;
 	if ((is_string_correct(value) == 1) || (is_string_correct(value) == 2)) {
 		type = "string";
-		Variable *v = new_var(name, value, type);
+		if (is_string_correct(value) == 1) {
+			strcpy(value, return_str_without_one(value));
+		}
+		else if (is_string_correct(value) == 2) 
+			strcpy(value, return_str_without_two(value));
+		add_value_var(lstvar,name, value, type);
 	}
 	else if (isdigit(value[0])!=0) {
-		for (int i = 1; i < strlen(value)-1; i++)
+		int isNum = 1;
+		for (int i = 1; i < strlen(value); i++)
 		{
-			if (isdigit(value[i]) != 0)
-				type = "integer";
+			if (isdigit(value[i]) == 0)
+				isNum = 0;
 		}
-		type = "integer";
-		Variable *v = new_var(name, value, type);
+		if (isNum == 1) {
+			type = "integer";
+			add_value_var(lstvar, name, value, type);
+		}
 	}
 	else
 		printf("SyntaxError invalaid value");
 	
-}
-
-
-int is_first_print(char *input) {
-	const char copy_input[1024];
-	strcpy(copy_input, input);
-	char first[30];
-	strcpy(first, "");
-	if (strlen(copy_input) < 7)
-		return 0;//not enof to print
-	for (int i = 0; i < 5; i++)
-	{
-		strcpy(first[i],copy_input[i]);
-	}
 }
 
 

@@ -15,6 +15,9 @@ typedef struct ListVar {
 } ListVar;
 
 Variable* new_var(char*, char*, char*);
+ListVar* new_list_var(void);
+void add_value_var(ListVar*, char*, char*, char*);
+Variable* get_var_by_name(ListVar*, char*);
 
 
 
