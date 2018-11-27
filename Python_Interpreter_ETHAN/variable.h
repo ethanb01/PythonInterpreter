@@ -1,5 +1,7 @@
 #pragma once
 
+
+
 typedef struct Variable {
 	char *type;
 	int value_int;

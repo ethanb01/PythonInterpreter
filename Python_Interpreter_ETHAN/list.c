@@ -97,29 +97,99 @@ List* new_list_equals(char *input) {
 
 	return lst;
 }
-void fill_list(List* self, char *input) {
-	self->head = NULL;
-	self->last = NULL;
-	self->length = 0;
 
-	char copy_input[30];
-	strcpy(copy_input, input);
+List* new_list_div(char *value) {
+	List *lst = (List*)malloc(sizeof(List));
+	lst->head = NULL;
+	lst->last = NULL;
+	lst->length = 0;
+
+	char copy_input[1024];
+	strcpy(copy_input, value);
 	int i = 0;
-	char *p = strtok(copy_input, " ");
+	const char *del = "/";
+	char *p = strtok(copy_input, del);
+
 	//add_value(lst, p);
 	while (p != NULL)
 	{
-		add_value(self, p);
-		p = strtok(NULL, " ");
+		add_value(lst, p);
+		p = strtok(NULL, "");
 	}
 
+	return lst;
 }
 
 
 
-void print_given_lst_Vlist(List* self) {
-	printf(self->head->value);
+List* new_list_plus(char *value) {
+	List *lst = (List*)malloc(sizeof(List));
+	lst->head = NULL;
+	lst->last = NULL;
+	lst->length = 0;
+
+	char copy_input[1024];
+	strcpy(copy_input, value);
+	int i = 0;
+	const char *del = "+";
+	char *p = strtok(copy_input, del);
+
+	//add_value(lst, p);
+	while (p != NULL)
+	{
+		add_value(lst, p);
+		p = strtok(NULL, "");
+	}
+
+	return lst;
 }
+
+
+List* new_list_minus(char *value) {
+	List *lst = (List*)malloc(sizeof(List));
+	lst->head = NULL;
+	lst->last = NULL;
+	lst->length = 0;
+
+	char copy_input[1024];
+	strcpy(copy_input, value);
+	int i = 0;
+	const char *del = "-";
+	char *p = strtok(copy_input, del);
+
+	//add_value(lst, p);
+	while (p != NULL)
+	{
+		add_value(lst, p);
+		p = strtok(NULL, "");
+	}
+
+	return lst;
+}
+
+
+List* new_list_kaful(char *value) {
+	List *lst = (List*)malloc(sizeof(List));
+	lst->head = NULL;
+	lst->last = NULL;
+	lst->length = 0;
+
+	char copy_input[1024];
+	strcpy(copy_input, value);
+	int i = 0;
+	const char *del = "*";
+	char *p = strtok(copy_input, del);
+
+	//add_value(lst, p);
+	while (p != NULL)
+	{
+		add_value(lst, p);
+		p = strtok(NULL, "");
+	}
+
+	return lst;
+}
+
 
 
 // function gets int and add Node to the list

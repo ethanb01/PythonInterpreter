@@ -10,9 +10,9 @@ int is_string_correct(char*);
 char* return_str_without_two(char*);
 char* return_str_without_one(char*);
 Variable* is_variable(ListVar*, char*);
+char* operation_value(char*,ListVar*);
 
-
-int want_variable = 0;
+int want_variable=0;
 
 void parseString(ListVar* lstvar, char* input) {
 	want_variable = 0;
@@ -27,6 +27,10 @@ void parseString(ListVar* lstvar, char* input) {
 void check_quit(char* input) {
 	if (strcmp(input, "exit()") == 0 || strcmp(input, "quit()") == 0)
 		exit();
+	else if (strcmp(input, "exit") == 0) {
+		want_variable = 1;
+		printf("You need to write exit() to exit");
+	}
 }
 
 
@@ -47,8 +51,8 @@ int check_print_func(ListVar* lstvar, char *input) {
 			else
 				printf("%s", maybe->value_string);
 		}
-		else
-			printf("SytaxError you need choukchick");
+		else 
+			printf("SytaxError you need choukchick OR Variable dont exist");
 		
 		
 	}
@@ -104,31 +108,143 @@ int want_new_variable(ListVar* lstvar, char *input) {
 
 int create_variable(ListVar* lstvar, char* name, char *value) {
 	char *type=NULL;
-	if ((is_string_correct(value) == 1) || (is_string_correct(value) == 2)) {
+	int is_number = 0;
+	char *result = operation_value(value,lstvar);
+	is_number = is_num(value, is_number);
+	if ((is_string_correct(value) == 1) || (is_string_correct(value) == 2)) {//IS STRING
 		type = "string";
 		if (is_string_correct(value) == 1) {
 			strcpy(value, return_str_without_one(value));
 		}
-		else if (is_string_correct(value) == 2) 
+		else if (is_string_correct(value) == 2)
 			strcpy(value, return_str_without_two(value));
-		add_value_var(lstvar,name, value, type);
+		add_value_var(lstvar, name, value, type);
 	}
-	else if (isdigit(value[0])!=0) {
-		int isNum = 1;
+	else if (is_number == 1) { // IS INTEGER
+		type = "integer";
+		add_value_var(lstvar, name, value, type);
+	}
+	else if (strcmp(result, "-555") != 0) {
+		type = "integer";
+		add_value_var(lstvar, name, result, type);
+	}
+	else {
+		printf("SyntaxError invalaid value");
+	}
+}
+
+char* operation_value(char* value, ListVar *lstvar) {
+	char *res = (char*)malloc(sizeof(char));
+	strcpy(res, "");
+	int first, second,result;
+	List *lst_plus = new_list_plus(value);
+	List *lst_minus = new_list_minus(value);
+	List *lst_kaful = new_list_kaful(value);
+	List *lst_div = new_list_div(value);
+	if (lst_plus->length == 2) {
+		if (is_variable(lstvar, lst_plus->head->value)!=NULL) {
+			Variable *varf = is_variable(lstvar, lst_plus->head->value);
+			first = varf->value_int;
+		}
+		else
+			first = atoi(lst_plus->head->value);
+		if (is_variable(lstvar, lst_plus->last->value) != NULL) {
+			Variable *vars = is_variable(lstvar, lst_plus->last->value);
+			second = vars->value_int;
+		}
+		else
+			second = atoi(lst_plus->last->value);
+		free(lst_plus);
+		free(lst_kaful);
+		free(lst_minus);
+		free(lst_div);
+		result = first + second;
+		//res = itoa(result);
+		itoa(result, res,10);
+		return res;
+	}
+	else if (lst_minus->length == 2) {
+		if (is_variable(lstvar, lst_minus->head->value) != NULL) {
+			Variable *varf = is_variable(lstvar, lst_minus->head->value);
+			first = varf->value_int;
+		}
+		else
+			first = atoi(lst_minus->head->value);
+		if (is_variable(lstvar, lst_minus->last->value) != NULL) {
+			Variable *vars = is_variable(lstvar, lst_minus->last->value);
+			second = vars->value_int;
+		}
+		else
+			second = atoi(lst_minus->last->value);
+		free(lst_plus);
+		free(lst_kaful);
+		free(lst_minus);
+		free(lst_div);
+		result = first - second;
+		//res = itoa(result);
+		itoa(result, res, 10);
+		return res;
+	}
+	else if (lst_kaful->length == 2) {
+		if (is_variable(lstvar, lst_kaful->head->value) != NULL) {
+			Variable *varf = is_variable(lstvar, lst_kaful->head->value);
+			first = varf->value_int;
+		}
+		else
+			first = atoi(lst_kaful->head->value);
+		if (is_variable(lstvar, lst_kaful->last->value) != NULL) {
+			Variable *vars = is_variable(lstvar, lst_kaful->last->value);
+			second = vars->value_int;
+		}
+		else
+			second = atoi(lst_kaful->last->value);
+		free(lst_plus);
+		free(lst_kaful);
+		free(lst_minus);
+		free(lst_div);
+		result = first * second;
+		//res = itoa(result);
+		itoa(result, res, 10);
+		return res;
+	}
+	else if (lst_div->length == 2) {
+		if (is_variable(lstvar, lst_div->head->value) != NULL) {
+			Variable *varf = is_variable(lstvar, lst_div->head->value);
+			first = varf->value_int;
+		}
+		else
+			first = atoi(lst_div->head->value);
+		if (is_variable(lstvar, lst_div->last->value) != NULL) {
+			Variable *vars = is_variable(lstvar, lst_div->last->value);
+			second = vars->value_int;
+		}
+		else
+			second = atoi(lst_div->last->value);
+		free(lst_plus);
+		free(lst_kaful);
+		free(lst_minus);
+		free(lst_div);
+		result = first - second;
+		//res = itoa(result);
+		itoa(result, res, 10);
+		return res;
+	}
+	else
+	{
+		strcpy(res,"-555");
+		return res;
+	}
+
+}
+
+int is_num(char *value, int num) {
+	if (isdigit(value[0]) != 0) { // IS INTEGER
+		num = 1;
 		for (int i = 1; i < strlen(value); i++)
 		{
 			if (isdigit(value[i]) == 0)
-				isNum = 0;
+				num = 0;
 		}
-		if (isNum == 1) {
-			type = "integer";
-			add_value_var(lstvar, name, value, type);
-		}
+		return num;
 	}
-	else
-		printf("SyntaxError invalaid value");
-	
 }
-
-
-
