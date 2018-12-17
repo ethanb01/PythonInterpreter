@@ -5,15 +5,16 @@
 
 int main() {
 	printf("Mython - My Python Interpreter version 1.0 by [ETHAN BARKATE]\n");
-	char *input = (char*)malloc(sizeof(char*));
-	ListVar *lstvar = new_list_var();
+	char input[128]="";
+	ListVar *lstvar = new_list_var(); // to hashmap
 	while (1)
 	{
 		printf("\n>>> ");
-		read_line(input, 300, stdin);
+		read_line(input, 300, stdin); 
 		parseString(lstvar,input);
+		// add eval 
 	}
-
+	
 	return 0;
 
 }
