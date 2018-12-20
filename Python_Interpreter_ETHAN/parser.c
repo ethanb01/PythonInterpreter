@@ -4,14 +4,13 @@
 #include "list.h"
 #include "variable.h"
 
+void print_func(ListVar*, char*);
 void create_variable(ListVar*, char*, char*);
 void quit_func(char*);
-void print_func(List*);
 int kind_of_string(char*);
-char* return_str_without_two(char*);
-char* return_str_without_one(char*);
-Variable* is_variable(ListVar*, char*);
-char* operation_value(char*,ListVar*);
+char* str_without_two(char*);
+char* str_without_one(char*);
+char* return_var_value(char*,ListVar*);
 void free_all(List*, List*, List*, List*);
 int want_variable=0;
 
@@ -34,26 +33,14 @@ void quit_func(char* input) {
 
 }
 
-
+///////2CHECK
 void print_func(ListVar* lstvar, char *input) {
 	List *lst = new_list_parenthese(input);
-	Variable *maybe = is_variable(lstvar, lst->last->value);
-	if ((strcmp(lst->head->value, "print") == 0)||(strcmp(lst->head->value, "print ") == 0)) {
-
-		if (kind_of_string(lst->last->value) == 1) {
-			printf("%s", return_str_without_one(lst->last->value));
-		}
-		else if(kind_of_string(lst->last->value) == 2)
-			printf("%s", return_str_without_two(lst->last->value));
-		else if (maybe!=NULL)
-		{
-			if (strcmp(maybe->type,"integer")==0)
-				printf("%d", maybe->value_int);
-			else
-				printf("%s", maybe->value_string);
-		}
-		else 
-			printf("SytaxError you need choukchick OR Variable dont exist");
+	char *to_print = return_var_value(lst->last->value,lstvar);
+	if ((strcmp(lst->head->value, "print") == 0)||(strcmp(lst->head->value, "print ") == 0))
+	{
+		to_print = str_without_two(to_print);
+		printf("%s", to_print);
 		
 		
 	}
@@ -63,14 +50,6 @@ void print_func(ListVar* lstvar, char *input) {
 			printf("WHAT DO YOU WANT???");
 	}
 
-}
-
-Variable* is_variable(ListVar* lstvar, char *name) {
-	Variable *toReturn = get_var_by_name(lstvar, name);
-	if (toReturn != NULL)
-		return toReturn;
-	else
-		return NULL;
 }
 
 
@@ -84,13 +63,13 @@ int kind_of_string(char *recv) {
 	return 0;
 }
 //function that receive a string between two "" and return the string without the 2 ""
-char* return_str_without_two(char *recv) {
+char* str_without_two(char *recv) {
 	char *to_return = strtok(recv, "\"");
 	return to_return;
 	
 }
 //function that receive a string between two '' and return the string without the 2 ''
-char* return_str_without_one(char *recv) {
+char* str_without_one(char *recv) {
 	char *to_return = strtok(recv, "\'");
 	return to_return;
 
@@ -119,29 +98,30 @@ int want_new_variable(ListVar* lstvar, char *input) {
 
 //function that create a variable
 void create_variable(ListVar* lstvar, char* name, char *value) {
-	char *type=NULL;
-	char *result = operation_value(value,lstvar);//the result of the operation if the variable is : a=1+2 
-	int is_number = is_num(result);//if the variable is an integer ==1
-	int is_string = kind_of_string(result);//check if it is a string ==1
+	char *type=NULL;//int or string
+	char *var_value = return_var_value(value,lstvar);//the value to be put in the variable
+	int is_number = is_num(var_value);//if the variable is an integer ==1
+	int is_string = kind_of_string(var_value);//check if it is a string ==1
 
 	if ((is_string == 1) || (is_string == 2)) {//check if it is a string 
 		type = "string";
-		if (is_string == 1) //''
-			strcpy(result, return_str_without_one(result));
-		else if (is_string == 2)//""
-			strcpy(result, return_str_without_two(result));
-		add_value_var(lstvar, name, result, type);//add the string variable to the list of variables
+		//if (is_string == 1) //''
+		//	strcpy(var_value, str_without_one(var_value));
+		//else if (is_string == 2)//""
+		strcpy(var_value, str_without_two(var_value));
+		add_value_var(lstvar, name, var_value, type);//add the string variable to the list of variables
 	}
 	else if (is_number == 1) { // IS INTEGER
 		type = "integer";
-		add_value_var(lstvar, name, value, type);
+		add_value_var(lstvar, name, var_value, type);
 	}
 	else {
 		printf("SyntaxError invalaid value");
 	}
 }
 
-char* operation_value(char* value, ListVar *lstvar) {
+//function that receive all the string after the '=' and parse it and return the value (in char)
+char* return_var_value(char* value, ListVar *lstvar) {
 	char *res = (char*)malloc(sizeof(char));
 	strcpy(res, "");
 	
@@ -156,20 +136,20 @@ char* operation_value(char* value, ListVar *lstvar) {
 		//////// first
 		if (type_str == 1) 
 		{
-			strcat(res,"\'");
-			strcat(res,return_str_without_one(lst_plus->head->value));
+			strcat(res,"\"");
+			strcat(res,str_without_one(lst_plus->head->value));
 		}
 		else if (type_str == 2)
 		{
 			strcat(res, "\"");
-			strcat(res, return_str_without_two(lst_plus->head->value));
+			strcat(res, str_without_two(lst_plus->head->value));
 		}
 		else if (is_num(lst_plus->head->value))
 		{
 			first = atoi(lst_plus->head->value);
 		}
-		else if (is_variable(lstvar, lst_plus->head->value) != NULL) {
-			Variable *varf = is_variable(lstvar, lst_plus->head->value);
+		else if (get_var_by_name(lstvar, lst_plus->head->value) != NULL) {
+			Variable *varf = get_var_by_name(lstvar, lst_plus->head->value);
 			if (strcmp(varf->type, "string") == 0)
 			{
 				strcat(res, "\"");
@@ -183,16 +163,16 @@ char* operation_value(char* value, ListVar *lstvar) {
 
 		////// SECOND
 		if (type_str == 1) {
-			strcat(res, return_str_without_one(lst_plus->last->value));
-			strcat(res, "\'");
+			strcat(res, str_without_one(lst_plus->last->value));
+			strcat(res, "\"");
 		}
 		else if (type_str == 2)
 		{
-			strcat(res, return_str_without_two(lst_plus->last->value));
+			strcat(res, str_without_two(lst_plus->last->value));
 			strcat(res, "\"");
 		}
-		else if (is_variable(lstvar, lst_plus->last->value) != NULL) {
-			Variable *varf = is_variable(lstvar, lst_plus->last->value);
+		else if (get_var_by_name(lstvar, lst_plus->last->value) != NULL) {
+			Variable *varf = get_var_by_name(lstvar, lst_plus->last->value);
 			if (strcmp(varf->type, "string") == 0)
 			{
 				strcat(res, varf->value_string);
@@ -226,8 +206,8 @@ char* operation_value(char* value, ListVar *lstvar) {
 		{
 			first = atoi(lst_minus->head->value);
 		}
-		else if (is_variable(lstvar, lst_minus->head->value) != NULL) {
-			Variable *varf = is_variable(lstvar, lst_minus->head->value);
+		else if (get_var_by_name(lstvar, lst_minus->head->value) != NULL) {
+			Variable *varf = get_var_by_name(lstvar, lst_minus->head->value);
 			if (strcmp(varf->type, "string") == 0)
 			{
 				strcpy(res, "Impossible to do substraction to strings");
@@ -246,8 +226,8 @@ char* operation_value(char* value, ListVar *lstvar) {
 		{
 			strcpy(res, "Impossible to do substraction to strings");
 		}
-		else if (is_variable(lstvar, lst_minus->last->value) != NULL) {
-			Variable *varf = is_variable(lstvar, lst_minus->last->value);
+		else if (get_var_by_name(lstvar, lst_minus->last->value) != NULL) {
+			Variable *varf = get_var_by_name(lstvar, lst_minus->last->value);
 			if (strcmp(varf->type, "string") == 0)
 			{
 				strcpy(res, "Impossible to do substraction to strings");
@@ -281,8 +261,8 @@ char* operation_value(char* value, ListVar *lstvar) {
 		{
 			first = atoi(lst_kaful->head->value);
 		}
-		else if (is_variable(lstvar, lst_kaful->head->value) != NULL) {
-			Variable *varf = is_variable(lstvar, lst_kaful->head->value);
+		else if (get_var_by_name(lstvar, lst_kaful->head->value) != NULL) {
+			Variable *varf = get_var_by_name(lstvar, lst_kaful->head->value);
 			if (strcmp(varf->type, "string") == 0)
 			{
 				strcpy(res, "Impossible to do multiplication to strings");
@@ -301,8 +281,8 @@ char* operation_value(char* value, ListVar *lstvar) {
 		{
 			strcpy(res, "Impossible to do multiplication to strings");
 		}
-		else if (is_variable(lstvar, lst_kaful->last->value) != NULL) {
-			Variable *varf = is_variable(lstvar, lst_kaful->last->value);
+		else if (get_var_by_name(lstvar, lst_kaful->last->value) != NULL) {
+			Variable *varf = get_var_by_name(lstvar, lst_kaful->last->value);
 			if (strcmp(varf->type, "string") == 0)
 			{
 				strcpy(res, "Impossible to do multiplication to strings");
@@ -336,8 +316,8 @@ char* operation_value(char* value, ListVar *lstvar) {
 		{
 			first = atoi(lst_div->head->value);
 		}
-		else if (is_variable(lstvar, lst_div->head->value) != NULL) {
-			Variable *varf = is_variable(lstvar, lst_div->head->value);
+		else if (get_var_by_name(lstvar, lst_div->head->value) != NULL) {
+			Variable *varf = get_var_by_name(lstvar, lst_div->head->value);
 			if (strcmp(varf->type, "string") == 0)
 			{
 				strcpy(res, "Impossible to do division to strings");
@@ -356,8 +336,8 @@ char* operation_value(char* value, ListVar *lstvar) {
 		{
 			strcpy(res, "Impossible to do division to strings");
 		}
-		else if (is_variable(lstvar, lst_div->last->value) != NULL) {
-			Variable *varf = is_variable(lstvar, lst_div->last->value);
+		else if (get_var_by_name(lstvar, lst_div->last->value) != NULL) {
+			Variable *varf = get_var_by_name(lstvar, lst_div->last->value);
 			if (strcmp(varf->type, "string") == 0)
 			{
 				strcpy(res, "Impossible to do division to strings");
@@ -379,7 +359,18 @@ char* operation_value(char* value, ListVar *lstvar) {
 	}
 	else
 	{
-		strcpy(res, value);
+		Variable *varf = get_var_by_name(lstvar, value);
+		if (varf != NULL)
+		{
+			if (varf->value_int != NULL)
+				itoa(varf->value_int, res, 10);
+			else if (varf->value_string !=NULL)
+				strcpy(res, varf->value_string);
+		}
+		else if ((kind_of_string(value) == 0) && (is_num(value) == 0))
+			strcpy(res, "SytaxError you need choukchick OR Variable dont exist");
+		else
+			strcpy(res, value);
 	}
 	free_all(lst_plus, lst_minus, lst_kaful, lst_div);
 	return res;
@@ -402,5 +393,5 @@ void free_all(List *lst1, List *lst2, List *lst3, List *lst4) {
 	free(lst1);
 	free(lst2);
 	free(lst3);
-	//free(lst4);
+	free(lst4);
 }
