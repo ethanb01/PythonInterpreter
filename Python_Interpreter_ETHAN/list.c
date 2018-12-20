@@ -69,7 +69,7 @@ List* new_list_parenthese(char *input) {
 		add_value(lst, p);
 		p = strtok(NULL,del);
 	}
-
+	// (2+3)*2
 	return lst;
 }
 

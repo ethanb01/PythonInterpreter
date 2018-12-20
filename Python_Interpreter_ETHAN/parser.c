@@ -3,6 +3,7 @@
 #include <ctype.h>
 #include "list.h"
 #include "variable.h"
+#include "eli.h"
 
 void print_func(ListVar*, char*);
 void create_variable(ListVar*, char*, char*);
@@ -120,13 +121,13 @@ void create_variable(ListVar* lstvar, char* name, char *value) {
 }
 
 //function that receive all the string after the '=' and parse it and return the value (in char)
-char* return_var_value(char* value, ListVar *lstvar) {
+char* return_var_value(char* value, ListVar *lstvar) { // todo eli: rhs value
 	char *res = (char*)malloc(sizeof(char));
 	strcpy(res, "");
 	
 	int first = 0, second = 0,result;
-	List *lst_plus = new_list_plus(value);
-	List *lst_minus = new_list_minus(value);
+	operation* op = str2operation(value);
+	if op->optr
 	List *lst_kaful = new_list_kaful(value);
 	List *lst_div = new_list_div(value);
 	int type_str = kind_of_string(lst_plus->head->value);
