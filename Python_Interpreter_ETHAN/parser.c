@@ -22,7 +22,6 @@ void parseString(ListVar* lstvar, char* input) {
 }
 
 
-
 void quit_func(char* input) {
 	if (strcmp(input, "exit()") == 0 || strcmp(input, "quit()") == 0)
 		exit(1);
@@ -33,7 +32,7 @@ void quit_func(char* input) {
 
 }
 
-///////2CHECK
+
 void print_func(ListVar* lstvar, char *input) {
 	List *lst = new_list_parenthese(input);
 	char *to_print = return_var_value(lst->last->value,lstvar);
@@ -41,8 +40,6 @@ void print_func(ListVar* lstvar, char *input) {
 	{
 		to_print = str_without_two(to_print);
 		printf("%s", to_print);
-		
-		
 	}
 	else
 	{
@@ -79,11 +76,12 @@ char* str_without_one(char *recv) {
 //function that receive input and call to the function create_variable if wanted to create a variable OR return 0
 int want_new_variable(ListVar* lstvar, char *input) {
 	List *lst = new_list_equals(input);
-	char *name= NULL ,*value= NULL;
-	name = lst->head->value;
-	value = lst->last->value;
+	char *name = lst->head->value;
+	char *value = lst->last->value;
+
 	
-  	if (lst->length == 2) {
+  	if (lst->length == 2) 
+	{
 		want_variable = 1;
 		create_variable(lstvar, name, value);
 		return 1;
@@ -115,7 +113,8 @@ void create_variable(ListVar* lstvar, char* name, char *value) {
 		type = "integer";
 		add_value_var(lstvar, name, var_value, type);
 	}
-	else {
+	else 
+	{
 		printf("SyntaxError invalaid value");
 	}
 }
