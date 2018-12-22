@@ -125,6 +125,7 @@
     <ClCompile Include="variable.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="eli.h" />
     <ClInclude Include="list.h" />
     <ClInclude Include="parser.h" />
     <ClInclude Include="ui_utils.h" />

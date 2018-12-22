@@ -3,6 +3,7 @@
 #include <ctype.h>
 #include "list.h"
 #include "variable.h"
+#include "eli.h"
 
 void print_func(ListVar*, char*);
 void create_variable(ListVar*, char*, char*);
@@ -22,7 +23,6 @@ void parseString(ListVar* lstvar, char* input) {
 }
 
 
-
 void quit_func(char* input) {
 	if (strcmp(input, "exit()") == 0 || strcmp(input, "quit()") == 0)
 		exit(1);
@@ -33,7 +33,7 @@ void quit_func(char* input) {
 	
 }
 
-///////2CHECK
+
 void print_func(ListVar* lstvar, char *input) {
 	List *lst = new_list_parenthese(input);
 	char *to_print = return_var_value(lst->last->value,lstvar);
@@ -41,8 +41,6 @@ void print_func(ListVar* lstvar, char *input) {
 	{
 		to_print = str_without_two(to_print);
 		printf("%s", to_print);
-		
-		
 	}
 	else
 	{
@@ -79,11 +77,12 @@ char* str_without_one(char *recv) {
 //function that receive input and call to the function create_variable if wanted to create a variable OR return 0
 int want_new_variable(ListVar* lstvar, char *input) {
 	List *lst = new_list_equals(input);
-	char *name= NULL ,*value= NULL;
-	name = lst->head->value;
-	value = lst->last->value;
+	char *name = lst->head->value;
+	char *value = lst->last->value;
+
 	
-  	if (lst->length == 2) {
+  	if (lst->length == 2) 
+	{
 		want_variable = 1;
 		create_variable(lstvar, name, value);
 		return 1;
@@ -115,19 +114,20 @@ void create_variable(ListVar* lstvar, char* name, char *value) {
 		type = "integer";
 		add_value_var(lstvar, name, var_value, type);
 	}
-	else {
+	else 
+	{
 		printf("SyntaxError invalaid value");
 	}
 }
 
 //function that receive all the string after the '=' and parse it and return the value (in char)
-char* return_var_value(char* value, ListVar *lstvar) {
+char* return_var_value(char* value, ListVar *lstvar) { // todo eli: rhs value
 	char *res = (char*)malloc(sizeof(char));
 	strcpy(res, "");
 	
 	int first = 0, second = 0,result;
-	List *lst_plus = new_list_plus(value);
-	List *lst_minus = new_list_minus(value);
+	operation* op = str2operation(value);
+	if op->optr
 	List *lst_kaful = new_list_kaful(value);
 	List *lst_div = new_list_div(value);
 	int type_str = kind_of_string(lst_plus->head->value);

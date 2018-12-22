@@ -3,7 +3,7 @@
 #include "parser.h"
 #include "variable.h"
 
-int main() {
+int main(int argc, char** argv) {
 	printf("Mython - My Python Interpreter version 1.0 by [ETHAN BARKATE]\n");
 	char input[128]="";
 	ListVar *lstvar = new_list_var(); // to hashmap
