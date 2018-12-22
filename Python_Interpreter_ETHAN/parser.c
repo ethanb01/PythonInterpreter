@@ -30,7 +30,7 @@ void quit_func(char* input) {
 		want_variable = 1;
 		printf("You need to write exit() to exit");
 	}
-
+	
 }
 
 ///////2CHECK
@@ -132,7 +132,7 @@ char* return_var_value(char* value, ListVar *lstvar) {
 	List *lst_div = new_list_div(value);
 	int type_str = kind_of_string(lst_plus->head->value);
 
-	if (lst_plus->length == 2) { ///////////////List PLUS
+	if (lst_plus->length == 2) { //List PLUS
 		//////// first
 		if (type_str == 1) 
 		{
