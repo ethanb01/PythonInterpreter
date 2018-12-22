@@ -120,12 +120,13 @@
   <ItemGroup>
     <ClCompile Include="interpreter.c" />
     <ClCompile Include="list.c" />
+    <ClCompile Include="operation.c" />
     <ClCompile Include="parser.c" />
     <ClCompile Include="ui_utils.c" />
     <ClCompile Include="variable.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="eli.h" />
+    <ClInclude Include="operation.h" />
     <ClInclude Include="list.h" />
     <ClInclude Include="parser.h" />
     <ClInclude Include="ui_utils.h" />

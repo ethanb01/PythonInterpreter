@@ -138,7 +138,7 @@ List* new_list_plus(char *value) {
 	while (p != NULL)
 	{
 		add_value(lst, p);
-		p = strtok(NULL, "");
+		p = strtok(NULL, "+");
 	}
 
 	return lst;

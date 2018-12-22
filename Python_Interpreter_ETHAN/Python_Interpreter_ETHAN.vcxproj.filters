@@ -30,6 +30,9 @@
     <ClCompile Include="variable.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="operation.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="parser.h">
@@ -44,7 +47,7 @@
     <ClInclude Include="variable.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="eli.h">
+    <ClInclude Include="operation.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
